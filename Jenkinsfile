@@ -21,13 +21,28 @@ pipeline {
                 """
             }
         }
-        stage('Deploy') {
+        stage('Deploy & Push') {
             steps {
-                bat """
-                docker stop flask-calculator || exit 0
-                docker rm flask-calculator || exit 0
-                docker run -d --name flask-calculator -p 5000:5000 ${IMAGE_NAME}
-                """
+                script {
+                    // Stop and remove any existing container, then start new one
+                    bat """
+                    docker stop flask-calculator || exit 0
+                    docker rm flask-calculator || exit 0
+                    docker run -d --name flask-calculator -p 5000:5000 ${IMAGE_NAME}
+                    """
+
+                    // Log in to Docker Hub and push image
+                    withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials',
+                                                      usernameVariable: 'DOCKER_USER',
+                                                      passwordVariable: 'DOCKER_PASS')]) {
+                        bat """
+                        docker login -u %DOCKER_USER% -p %DOCKER_PASS%
+                        docker tag ${IMAGE_NAME} %DOCKER_USER%/${IMAGE_NAME}:latest
+                        docker push %DOCKER_USER%/${IMAGE_NAME}:latest
+                        docker logout
+                        """
+                    }
+                }
             }
         }
     }
