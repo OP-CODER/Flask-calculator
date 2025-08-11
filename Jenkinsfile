@@ -17,7 +17,8 @@ pipeline {
     stage('Test') {
       steps {
         bat """
-        docker run --rm -v "%cd%:/app" -w /app ${IMAGE_NAME} pytest
+        bat "docker run --rm -v \"%cd%:/app\" -w /app flask-calculator pytest tests/"
+
         """
       }
     }
