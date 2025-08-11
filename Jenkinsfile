@@ -28,3 +28,7 @@ pipeline {
                 docker rm flask-calculator || exit 0
                 docker run -d --name flask-calculator -p 5000:5000 ${IMAGE_NAME}
                 """
+            }
+        }
+    }
+}
