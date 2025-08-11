@@ -25,10 +25,14 @@ pipeline {
         }
       }
     }
-    stage('Deploy') {
-      steps {
-        sh "docker run -d -p 5000:5000 ${IMAGE_NAME}"
-      }
+stage('Deploy') {
+  steps {
+    script {
+      sh """
+      docker stop flask-calculator || true
+      docker rm flask-calculator || true
+      docker run -d --name flask-calculator -p 5000:5000 ${IMAGE_NAME}
+      """
     }
   }
 }
