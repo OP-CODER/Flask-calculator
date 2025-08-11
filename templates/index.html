@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Flask Calculator</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 30px; }
+        input, select, button { margin: 5px; padding: 5px; }
+    </style>
+</head>
+<body>
+    <h1>Flask Calculator</h1>
+    <input type="number" id="x" placeholder="First number">
+    <input type="number" id="y" placeholder="Second number">
+    <select id="operation">
+        <option value="add">Add</option>
+        <option value="subtract">Subtract</option>
+        <option value="multiply">Multiply</option>
+        <option value="division">Divide</option>
+    </select>
+    <button onclick="calculate()">Calculate</button>
+
+    <h2 id="result"></h2>
+
+    <script>
+        async function calculate() {
+            let x = document.getElementById("x").value;
+            let y = document.getElementById("y").value;
+            let op = document.getElementById("operation").value;
+
+            let response = await fetch(`/${op}`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ x: Number(x), y: Number(y) })
+            });
+
+            let data = await response.json();
+            document.getElementById("result").innerText = "Result: " + data["Message"];
+        }
+    </script>
+</body>
+</html>
