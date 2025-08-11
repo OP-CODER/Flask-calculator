@@ -1,3 +1,7 @@
+from flask import Flask, render_template, request
+
+app = Flask(__name__)  # This creates the app object
+
 @app.route('/', methods=['GET', 'POST'])
 def home():
     result = None
@@ -16,3 +20,6 @@ def home():
             result = num1 / num2 if num2 != 0 else 'Error: Division by zero'
 
     return render_template('index.html', result=result)
+
+if __name__ == "__main__":
+    app.run(debug=True, host="0.0.0.0", port=5000)
