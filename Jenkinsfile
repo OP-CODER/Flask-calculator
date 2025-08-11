@@ -6,35 +6,29 @@ pipeline {
   stages {
     stage('Checkout') {
       steps {
-         git branch: 'main', url: 'https://github.com/OP-CODER/Flask-calculator.git'
+        git branch: 'main', url: 'https://github.com/OP-CODER/Flask-calculator.git'
       }
     }
     stage('Build Docker Image') {
       steps {
-        script {
-          docker.build("${IMAGE_NAME}")
-        }
+        bat "docker build -t ${IMAGE_NAME} ."
       }
     }
     stage('Test') {
       steps {
-        script {
-          docker.image("${IMAGE_NAME}").inside {
-            sh 'pytest'
-          }
-        }
+        bat """
+        docker run --rm -v "%cd%:/app" -w /app ${IMAGE_NAME} pytest
+        """
       }
     }
     stage('Deploy') {
       steps {
-        script {
-          sh """
-          docker stop flask-calculator || true
-          docker rm flask-calculator || true
-          docker run -d --name flask-calculator -p 5000:5000 ${IMAGE_NAME}
-          """
-        }
+        bat """
+        docker stop flask-calculator || exit 0
+        docker rm flask-calculator || exit 0
+        docker run -d --name flask-calculator -p 5000:5000 ${IMAGE_NAME}
+        """
       }
     }
-  } // end stages
-} // end pipeline
+  }
+}
